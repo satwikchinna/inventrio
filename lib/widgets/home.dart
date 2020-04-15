@@ -3,11 +3,14 @@ import '../widgets/purchase.dart';
 import '../widgets/sale.dart';
 import '../widgets/inventory.dart';
 import '../widgets/dashboard.dart';
-
+import '../models/itemModel.dart';
+import '../database_helper.dart';
 
 class Home extends StatelessWidget {
-  // This widget is the root of your application.
+ final List items;
 
+  // This widget is the root of your application.
+Home({Key key, @required this.items}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return (Material(
@@ -26,7 +29,7 @@ class Home extends StatelessWidget {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => Inventory()),
+                                    builder: (context) => Inventory(items: items)),
                               );
                             },
                             child: Text("INVENTORY",

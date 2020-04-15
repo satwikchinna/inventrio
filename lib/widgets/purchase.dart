@@ -14,7 +14,12 @@ class Purchase extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         home: Scaffold(
             appBar: AppBar(
-              title: Center(child: Text("PURCHASE")),
+              leading: IconButton(
+    icon: Icon(Icons.arrow_back, color: Colors.white),
+    onPressed: () => Navigator.of(context).pop(),
+  ),
+              title:Text("PURCHASE")
+              ,
               backgroundColor: Colors.lightBlue,
             ),floatingActionButton: FloatingActionButton(
   foregroundColor: Colors.black54,

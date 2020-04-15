@@ -1,7 +1,18 @@
 import 'package:flutter/material.dart';
 import './widgets/home.dart';
 
-void main(){
+import './models/itemModel.dart';
+import './database_helper.dart';
+List _items;
+
+void main() async{
+ 
+   var db = new DatabaseHelper();
+ 
+
+  _items = await db.getAllItems();
+
+ 
   runApp(
     myApp()
    
@@ -27,7 +38,7 @@ class myApp extends StatelessWidget{
           backgroundColor: Colors.lightBlue,
         ),
         
-       body: Home()
+       body: Home(items: _items,)
     )));
   }
   
