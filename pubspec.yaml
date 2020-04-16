@@ -26,6 +26,7 @@ dependencies:
   cupertino_icons: ^0.1.2
   sqflite: any
   path_provider: any
+  autocomplete_textfield: any
 
 dev_dependencies:
   flutter_test:

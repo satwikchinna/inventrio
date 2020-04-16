@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import './widgets/home.dart';
 
-import './models/itemModel.dart';
+import './models/saleModel.dart';
 import './database_helper.dart';
-List _items;
 
+List sales;
 void main() async{
  
    var db = new DatabaseHelper();
  
-
-  _items = await db.getAllItems();
+  //db.saveSale(new Sale(20,DateTime.now().toIso8601String(),50,1));
+  sales = await db.getAllSales();
+  print(sales.last["itemname"]);
 
  
   runApp(

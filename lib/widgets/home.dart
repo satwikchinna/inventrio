@@ -62,7 +62,7 @@ Route _createRoute() {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => Purchase()),
+                                    builder: (context) => Purchases()),
                               );
                             },
                             child: Text("PURCHASE",
@@ -111,7 +111,7 @@ Route _createRoute() {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => Sale()),
+                                    builder: (context) => Sales()),
                               );
                             },
                             child: Text("SALE",

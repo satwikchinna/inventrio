@@ -2,7 +2,7 @@ class Item {
   int _itemid;
   String _itemname;
   double _itemstock;
-  int _uom;
+  String  _uom;
   double _sellingprice;
   double _costprice;
 
@@ -22,7 +22,7 @@ class Item {
 
   double get itemstock => _itemstock;
 
-  int get uom => _uom;
+ String get uom => _uom;
   double get sellingprice => _sellingprice;
   double get costprice => _costprice;
   int get itemid => _itemid;

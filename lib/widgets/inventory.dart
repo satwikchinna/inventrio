@@ -51,28 +51,44 @@ class _InventoryState extends State<Inventory> {
                   controller: _itemnameController,
                   autofocus: true,
                   decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                        fillColor: Colors.blue,
+                        focusColor: Colors.blue,
+                        prefixIcon: Icon(Icons.note_add),
                       labelText: "Item name",
                       hintText: "Sugar",
                       errorText: _validate ? "Please fill a valid value" : null,
-                      icon: Icon(Icons.note_add))),
+                      )), SizedBox(height: 10),
               TextField(
                   controller: _itemstockController,
                   keyboardType: TextInputType.number,
                   decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                        fillColor: Colors.blue,
+                        focusColor: Colors.blue,
+                        prefixIcon: Icon(Icons.note_add),
                       labelText: "Stock",
                       errorText:
-                          _validate ? "Please fill a valid value" : null)),
+                          _validate ? "Please fill a valid value" : null)), SizedBox(height: 10),
               TextField(
                   controller: _itemspController,
                   keyboardType: TextInputType.number,
                   decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                        fillColor: Colors.blue,
+                        focusColor: Colors.blue,
+                        prefixIcon: Icon(Icons.note_add),
                       labelText: "Selling price",
                       errorText:
-                          _validate ? "Please fill a valid value" : null)),
+                          _validate ? "Please fill a valid value" : null)), SizedBox(height: 10),
               TextField(
                   controller: _itemcpController,
                   keyboardType: TextInputType.number,
                   decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                        fillColor: Colors.blue,
+                        focusColor: Colors.blue,
+                        prefixIcon: Icon(Icons.note_add),
                       labelText: "Purchase price",
                       errorText:
                           _validate ? "Please fill a valid value" : null)),
@@ -225,7 +241,7 @@ class _InventoryState extends State<Inventory> {
                                         "${Item.fromMap(duplicateItems[position]).itemname}"
                                             .toUpperCase()),
                                     subtitle: new Text(
-                                        "Stock: ${Item.fromMap(duplicateItems[position]).itemstock}"),
+                                        "Stock: ${Item.fromMap(duplicateItems[position]).itemstock} ${Item.fromMap(duplicateItems[position]).uom}"),
                                     trailing: new Text(
                                         "Price:${Item.fromMap(duplicateItems[position]).sellingprice}"),
                                   ));
@@ -238,37 +254,44 @@ class _InventoryState extends State<Inventory> {
    if(query.isNotEmpty){
      var db = DatabaseHelper();
      var res = await db.getItemsearch(query);
-     
-     setState(() {
+     if(res!= null){
+ setState(() {
       
        duplicateItems = res;
      
        
      });
+     }
+     else if(res== null && query.isNotEmpty ){ setState(() {
+      
+       duplicateItems= [];
+     
+       
+     });
+     }
+    
     
    }
+
    else{
+
+     print("hey");
       setState(() {
        
-       duplicateItems = items;
-       duplicateItems.removeWhere((value) => value == null);
+       duplicateItems=items;
+       
      });
    }
+
   }
 
   Future _submitdataHandler(
       String name, String stock, String sp, String cp, String uom) async {
-    int measure;
-    if (uom == 'kgs') {
-      measure = 1;
-    } else if (uom == 'Nos') {
-      measure = 2;
-    } else {
-      measure = 3;
-    }
+    
+    
     var db = new DatabaseHelper();
     int idofsaved = await db.saveItem(new Item(name, double.parse(stock),
-        measure, double.parse(sp), double.parse(cp)));
+        uom, double.parse(sp), double.parse(cp)));
     dynamic updateditems = await db.getItem(idofsaved);
     setState(() {
       duplicateItems.insert(0, updateditems);

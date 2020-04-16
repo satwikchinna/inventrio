@@ -5,6 +5,8 @@ import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 
 import 'models/itemModel.dart';
+import 'models/saleModel.dart';
+import 'models/purchaseModel.dart';
 
 class DatabaseHelper{
 
@@ -37,7 +39,7 @@ Future<Database> get db async{
   
    initDb() async { 
 Directory documentDirectory = await getApplicationDocumentsDirectory();
-String path = join(documentDirectory.path,"maindb.db");
+String path = join(documentDirectory.path,"maindb1.db");
 
 var ourDb = await openDatabase(path,version: 1,onCreate: _onCreate ) ;
 return ourDb;
@@ -49,7 +51,7 @@ return ourDb;
             $columnId INTEGER PRIMARY KEY,
             $columnName TEXT NOT NULL,
             $columnStock REAL NOT NULL,
-            $columnUom INTEGER NOT NULL,
+            $columnUom TEXT NOT NULL,
             $columnSp REAL NOT NULL,
             $columnCp REAL NOT NULL
           )
@@ -60,7 +62,9 @@ return ourDb;
             $columnId INTEGER NOT NULL,
             $columnQuantity REAL NOT NULL,
             $columnSp REAL NOT NULL,
-            $columnDate DEFAULT CURRENT_TIMESTAMP
+            $columnDate TEXT NOT NULL,
+            FOREIGN KEY ($columnId)
+       REFERENCES $itable($columnId)
           )
           ''');
       await db.execute('''
@@ -69,7 +73,10 @@ return ourDb;
             $columnId INTEGER NOT NULL,
             $columnQuantity REAL NOT NULL,
             $columnCp REAL NOT NULL,
-            $columnDate DEFAULT CURRENT_TIMESTAMP
+            $columnDate TEXT NOT NULL,
+            FOREIGN KEY ($columnId)
+       REFERENCES $itable($columnId)
+          
           )
           ''');
 
@@ -83,12 +90,57 @@ return ourDb;
 
   }
 
+   Future<int> saveSale(Sale sale) async{
+       var dbClient = await db;
+       int res = await dbClient.insert("$stable",sale.toMap());
+       return res;
+
+
+  }
+  Future<int> savePurchase(Purchase purchase) async{
+       var dbClient = await db;
+       int res = await dbClient.insert("$ptable",purchase.toMap());
+       return res;
+
+
+  }
+
+
+  
+Future<List<String>> getAllItemnames() async {
+
+  var dbClient = await db;
+  var result = await dbClient.rawQuery("SELECT $columnName FROM $itable ");
+  List<String> list = new List();
+    for(var x in result){
+      x.forEach((k,v)=>list.add(v));
+    }
+    return list;
+  
+}
+
 Future<List> getAllItems() async {
 
   var dbClient = await db;
   var result = await dbClient.rawQuery("SELECT * FROM $itable ORDER BY $columnId DESC");
   return result.toList();
 }
+
+Future<List> getAllSales() async {
+
+  var dbClient = await db;
+  var result = await dbClient.rawQuery("SELECT b.*, a.itemname FROM $stable AS b INNER JOIN $itable as a ON (b._itemid=a._itemid) ORDER BY $columnSid DESC ");
+  return result.toList();
+}
+
+Future<List> getAllPurchases() async {
+
+  var dbClient = await db;
+  var result = await dbClient.rawQuery("SELECT b.*, a.itemname FROM $ptable AS b INNER JOIN $itable as a ON (b._itemid=a._itemid) ORDER BY $columnPid DESC");
+  return result.toList();
+}
+
+
 
 
 Future<int> getCount() async{
@@ -97,6 +149,20 @@ return Sqflite.firstIntValue(
   await dbClient.rawQuery("SELECT COUNT(*) FROM $itable")
 );
 }
+Future<int> getsCount() async{
+var dbClient = await db;
+return Sqflite.firstIntValue(
+  await dbClient.rawQuery("SELECT COUNT(*) FROM $stable")
+);
+}
+Future<int> getpCount() async{
+var dbClient = await db;
+return Sqflite.firstIntValue(
+  await dbClient.rawQuery("SELECT COUNT(*) FROM $ptable")
+);
+}
+
+
  
 
  Future<dynamic> getItem(int id) async{
@@ -105,13 +171,37 @@ return Sqflite.firstIntValue(
    if(result.length == 0) return null;
    return result.first;
  }
+ Future<dynamic> getSale(int id) async{
+   var dbClient = await db;
+   var result = await dbClient.rawQuery("SELECT * FROM $stable WHERE $columnSid = $id");
+   if(result.length == 0) return null;
+   return result.first;
+ }
+ Future<dynamic> getPurchase(int id) async{
+   var dbClient = await db;
+   var result = await dbClient.rawQuery("SELECT * FROM $ptable WHERE $columnPid = $id");
+   if(result.length == 0) return null;
+   return result.first;
+ }
 
-  Future<List> getItemsearch(String query) async{
+Future<List> getItemsearch(String query) async{
    var dbClient = await db;
    var result = await dbClient.rawQuery("SELECT * FROM $itable WHERE $columnName like '%$query%'");
    if(result.length == 0) return null;
    return result.toList();
- }
+}
+Future<List> getSalesearch(String query) async{
+   var dbClient = await db;
+   var result = await dbClient.rawQuery("SELECT b.*, a.itemname FROM $stable AS b INNER JOIN $itable as a ON (a.itemname LIKE '%$query%' AND b._itemid=a._itemid)");
+   if(result.length == 0) return null;
+   return result.toList();
+}
+Future<List> getPurchasesearch(String query) async{
+   var dbClient = await db;
+   var result = await dbClient.rawQuery("SELECT b.*, a.itemname FROM $ptable AS b INNER JOIN $itable as a ON (b._itemid=a._itemid) ORDER BY $columnPid DESC");
+   if(result.length == 0) return null;
+   return result.toList();
+}
 
  Future<int> updateItem(Item item) async{
    var dbClient = await db;
