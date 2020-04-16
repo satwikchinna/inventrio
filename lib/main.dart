@@ -38,7 +38,7 @@ class myApp extends StatelessWidget{
           backgroundColor: Colors.lightBlue,
         ),
         
-       body: Home(items: _items,)
+       body: Home()
     )));
   }
   

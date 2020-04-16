@@ -99,11 +99,18 @@ return Sqflite.firstIntValue(
 }
  
 
- Future<Item> getItem(int id) async{
+ Future<dynamic> getItem(int id) async{
    var dbClient = await db;
    var result = await dbClient.rawQuery("SELECT * FROM $itable WHERE $columnId = $id");
    if(result.length == 0) return null;
-   return new Item.fromMap(result.first);
+   return result.first;
+ }
+
+  Future<List> getItemsearch(String query) async{
+   var dbClient = await db;
+   var result = await dbClient.rawQuery("SELECT * FROM $itable WHERE $columnName like '%$query%'");
+   if(result.length == 0) return null;
+   return result.toList();
  }
 
  Future<int> updateItem(Item item) async{

@@ -7,10 +7,25 @@ import '../models/itemModel.dart';
 import '../database_helper.dart';
 
 class Home extends StatelessWidget {
- final List items;
+Route _createRoute() {
+  return PageRouteBuilder(
+    pageBuilder: (context, animation, secondaryAnimation) => Inventory(),
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      var begin = Offset(0.0, 1.0);
+      var end = Offset.zero;
+      var curve = Curves.ease;
+
+      var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
+
+      return SlideTransition(
+        position: animation.drive(tween),
+        child: child,
+      );
+    },
+  );
+}
 
   // This widget is the root of your application.
-Home({Key key, @required this.items}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return (Material(
@@ -26,11 +41,7 @@ Home({Key key, @required this.items}) : super(key: key);
                         children: <Widget>[
                           RaisedButton(
                             onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => Inventory(items: items)),
-                              );
+                               Navigator.of(context).push(_createRoute());
                             },
                             child: Text("INVENTORY",
                                 style: TextStyle(
