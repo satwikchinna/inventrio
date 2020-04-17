@@ -2,7 +2,100 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import '../database_helper.dart';
 
+class DataSearch extends SearchDelegate<String> {
+DataSearch(){
+  getcities();
+}
+  var db = DatabaseHelper();
+
+List cities;
+var recentCities;
+
+getcities() async{
+  cities = await db.getAllItemnames();
+ recentCities = ['sugar'];
+  }
+ 
+
+  @override
+  List<Widget> buildActions(BuildContext context) {
+    return [
+      IconButton(
+          icon: Icon(Icons.clear),
+          onPressed: () {
+            query = "";
+          })
+    ];
+  }
+
+  @override
+  Widget buildLeading(BuildContext context) {
+    return IconButton(
+        icon: AnimatedIcon(
+          icon: AnimatedIcons.menu_arrow,
+          progress: transitionAnimation,
+        ),
+        onPressed: () {
+          close(context, null);
+        });
+  }
+
+  @override
+  Widget buildResults(BuildContext context) {
+    return Center(
+      child: Container(
+        width: 500,
+        height: 100,
+        child: Card(
+          color: Colors.red,
+          child: Center(child: Text("Please select the itemname to sell it ")),
+        ),
+      ),
+    );
+  }
+
+  @override
+  Widget buildSuggestions(BuildContext context) {
+    final suggestionList = query.isEmpty
+        ? recentCities
+        : cities.where((p) => p.startsWith(query)).toList();
+
+    return ListView.builder(
+      itemBuilder: (context, index) => ListTile(
+        onTap: () {
+          itemnamefetch(context,suggestionList[index]);
+                  },
+                  leading: Icon(Icons.location_city),
+                  title: RichText(
+                    text: TextSpan(
+                      text: suggestionList[index].substring(0, query.length),
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                      ),
+                      children: [
+                        TextSpan(
+                          text: suggestionList[index].substring(query.length),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                itemCount:(suggestionList == null) ? 0: suggestionList.length,
+              );
+            }
+          
+            void itemnamefetch(context,substring) {
+ close(context, null);
+Navigator.push(context, new MaterialPageRoute(builder: (context) => new Addsales(suggestion: substring)));
+
+            }
+}
 class Addsales extends StatefulWidget {
+  final suggestion;
+  Addsales({Key key, @required this.suggestion}) : super(key: key);
+  
+  
   @override
   _AddsaleState createState() => new _AddsaleState();
 }
@@ -15,22 +108,16 @@ TextEditingController _itemnameController = new TextEditingController();
 TextEditingController _itemquantityController = new TextEditingController();
 TextEditingController _itemspController = new TextEditingController();
 
-
+bool saved = false;
   var db = DatabaseHelper();
   @override
   initState() {
     super.initState();
-    _getRecords();
-  }
-List items;
-List duplicateItems;
-  Future<void> _getRecords() async {
-    var res = await db.getAllItems();
-
-    setState(() {
-      items = res;
-      duplicateItems = items;
+    if(widget.suggestion != null ) {
+       setState(() {
+     _itemnameController.text =widget.suggestion;
     });
+    }
   }
 
   
@@ -50,8 +137,20 @@ List duplicateItems;
               leading: IconButton(
                 icon: Icon(Icons.arrow_back, color: Colors.white),
                 onPressed: () => Navigator.of(context).pop(),
+                
               ),
               title: Text("ADD SALE"),
+              actions: <Widget>[
+                 IconButton(
+                   autofocus: true,
+              icon: Icon(Icons.search),
+              onPressed: () {
+                showSearch(
+                  context: context,
+                  delegate: DataSearch(),
+                );
+              }),
+              ],
               backgroundColor: Colors.lightBlue,
             ),
            
@@ -61,20 +160,26 @@ List duplicateItems;
                   padding: EdgeInsets.all(5),
                   margin: EdgeInsets.all(15),
                   child: Column(children: <Widget>[
-                    
+                  
+                    new Center(
+  child:saved == true ? new Text("SALE SUCCESSFUL",style:TextStyle(fontWeight: FontWeight.bold,color: Colors.red,) ) : null
+),
+                  
               TextField(
                   controller: _itemnameController,
-                  autofocus: true,
+                  enabled: false,
+                  
                   decoration: InputDecoration(
                      border: OutlineInputBorder(),
                         fillColor: Colors.blue,
                         focusColor: Colors.blue,
-                        prefixIcon: Icon(Icons.note_add),
-                      labelText: "Item name",
+                        
+                      labelText: "Search for item name in appbar",
                       hintText: "Sugar",
                       errorText: _nvalidate ? "Please fill a valid value" : null,
                      )),
                       SizedBox(height: 10),
+                      
               TextField(
                 
                   controller: _itemquantityController,
@@ -112,7 +217,7 @@ List duplicateItems;
                            
                              
                            
- void _submitHandler() {
+  _submitHandler() {
 
 
 
@@ -139,7 +244,17 @@ if (_itemnameController.text.isEmpty ||
                 _qvalidate = false;
                 _nvalidate = false;
                });
+
+db.saveSale(_itemnameController.text, DateTime.now().toIso8601String() , double.parse(_itemquantityController.text), double.parse(_itemspController.text));
+_itemnameController.clear();
+_itemquantityController.clear();
+_itemspController.clear();
+setState(() {
+   saved = true;
+});
               }
+
+
             }
 
   

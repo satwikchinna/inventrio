@@ -1,7 +1,7 @@
 class Purchase {
   int itemid;
   int purchaseid;
-  String quantity;
+  double quantity;
   String doc;
   double costprice;
   

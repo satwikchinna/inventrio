@@ -7,11 +7,7 @@ import './database_helper.dart';
 List sales;
 void main() async{
  
-   var db = new DatabaseHelper();
- 
-  //db.saveSale(new Sale(20,DateTime.now().toIso8601String(),50,1));
-  sales = await db.getAllSales();
-  print(sales.last["itemname"]);
+
 
  
   runApp(

@@ -90,17 +90,20 @@ return ourDb;
 
   }
 
-   Future<int> saveSale(Sale sale) async{
+   void saveSale(String name,String doc,double quantity,double price) async{
        var dbClient = await db;
-       int res = await dbClient.insert("$stable",sale.toMap());
-       return res;
+       dbClient.rawQuery("INSERT INTO $stable(quantity,sellingprice,doc,_itemid) VALUES($quantity,$price,'$doc',(SELECT _itemid FROM $itable WHERE $columnName = '$name')) ");
+       dbClient.rawQuery("UPDATE $itable SET $columnStock = $columnStock - $quantity , $columnSp = $price WHERE $columnName = '$name' ");
+       
 
 
   }
-  Future<int> savePurchase(Purchase purchase) async{
+ 
+   void savePurchase(String name,String doc,double quantity,double price) async{
        var dbClient = await db;
-       int res = await dbClient.insert("$ptable",purchase.toMap());
-       return res;
+       dbClient.rawQuery("INSERT INTO $ptable(quantity,costprice,doc,_itemid) VALUES($quantity,$price,'$doc',(SELECT _itemid FROM $itable WHERE $columnName = '$name')) ");
+       dbClient.rawQuery("UPDATE $itable SET $columnStock = $columnStock + $quantity , $columnCp = $price WHERE $columnName = '$name' ");
+       
 
 
   }

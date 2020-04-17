@@ -65,7 +65,7 @@ class _SaleState extends State<Sales> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => Addsales()),
+                                    builder: (context) => Addsales(suggestion: null,)),
                               );
                             },
             ),
@@ -100,14 +100,14 @@ class _SaleState extends State<Sales> {
                                   child: new ListTile(
                                     leading: CircleAvatar(
                                       child: new Text(
-                                          "${duplicateSales[position]["itemname"]}"
-                                              .substring(0, 1)),
+                                    '${Sale.fromMap(duplicateSales[position]).quantity}'
+                                             ),
                                     ),
                                     title: new Text(
                                         "${duplicateSales[position]["itemname"]}"
                                             .toUpperCase()),
                                     subtitle: new Text(
-                                        "Quantity: ${Sale.fromMap(duplicateSales[position]).quantity} units"),
+                                        " ${Sale.fromMap(duplicateSales[position]).doc.substring(0,10)}"),
                                     trailing: new Text(
                                         "Price:${Sale.fromMap(duplicateSales[position]).sellingprice}"),
                                   ));

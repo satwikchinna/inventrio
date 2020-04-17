@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:inventrio/widgets/addPurchase.dart';
 import '../models/purchaseModel.dart';
 import '../database_helper.dart';
 
@@ -57,7 +58,13 @@ class _PurchaseState extends State<Purchases> {
               foregroundColor: Colors.black54,
               backgroundColor: Colors.red,
               child: Icon(Icons.add),
-              onPressed: null,
+              onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => Addpurchases(suggestion: null,)),
+                              );
+                            },
             ),
             body: Material(
                 color: Colors.white,
@@ -90,14 +97,14 @@ class _PurchaseState extends State<Purchases> {
                                   child: new ListTile(
                                     leading: CircleAvatar(
                                       child: new Text(
-                                          "${duplicatePurchases[position]["itemname"]}"
-                                              .substring(0, 1)),
+                                          "${Purchase.fromMap(duplicatePurchases[position]).quantity}"
+                                             ),
                                     ),
                                     title: new Text(
                                         "${duplicatePurchases[position]["itemname"]}"
                                             .toUpperCase()),
                                     subtitle: new Text(
-                                        "Quantity: ${Purchase.fromMap(duplicatePurchases[position]).quantity} units"),
+                                        "${Purchase.fromMap(duplicatePurchases[position]).doc.substring(0,10)}"),
                                     trailing: new Text(
                                         "Cost Price:${Purchase.fromMap(duplicatePurchases[position]).costprice}"),
                                   ));

@@ -92,7 +92,7 @@ Route _createRoute() {
                                     builder: (context) => Dashboard()),
                               );
                             },
-                            child: Text("DASHBOARD",
+                            child: Text("SCAN",
                                 style: TextStyle(
                                     color: Colors.white,
                                     fontWeight: FontWeight.bold)),
