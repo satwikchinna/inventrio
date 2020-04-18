@@ -6,8 +6,8 @@ import 'package:inventrio/widgets/sale.dart';
 import 'package:inventrio/widgets/scanResult.dart';
 import './widgets/home.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
-
-
+import 'dart:math';
+import 'package:charts_flutter/flutter.dart' as charts;
 import './models/saleModel.dart';
 import './database_helper.dart';
 
@@ -16,7 +16,6 @@ void main() async {
   var db = DatabaseHelper();
   var data = await db.getAnalysis();
 
-  print(data);
   runApp(myApp(data: data));
 }
 
@@ -28,44 +27,82 @@ class myApp extends StatefulWidget {
 }
 
 class _MyappState extends State<myApp> {
+  var x;
+
+  List incomeList = new List();
+  var averageSales;
+  @override
+  void initState() {
+    x = widget.data;
+    for (var i = 0; i < x.length; i++) {
+      incomeList.add(x[i]["income"]);
+    }
+    print(incomeList);
+    seriesList = loadData();
+    averageSales = incomeList.reduce((value, element) => value + element) /
+        incomeList.length;
+  }
+
+  List<charts.Series<Salesdata, String>> loadData() {
+    List<Salesdata> mobileSalesdata = [];
+    for (var i = 0; i < x.length; i++) {
+      mobileSalesdata.add(new Salesdata(x[i]['day'], x[i]["income"]));
+    }
+    return [
+      charts.Series<Salesdata, String>(
+        data: mobileSalesdata,
+        id: 'Sales',
+        domainFn: (Salesdata sales, _) => sales.date,
+        measureFn: (Salesdata sales, _) => sales.sales,
+        colorFn: (Salesdata sales, _) {
+          return (sales.sales >= averageSales)
+              ? charts.MaterialPalette.green.shadeDefault
+              : charts.MaterialPalette.deepOrange.shadeDefault;
+        },
+      )
+    ];
+  }
+
+  barChart() {
+    return charts.BarChart(seriesList, animate: true, vertical: true);
+  }
+
   String _scanBarcode;
-Future scanBarcodeNormal(BuildContext context ) async {
+  List<charts.Series> seriesList;
+  Future scanBarcodeNormal(BuildContext context) async {
     String barcodeScanRes;
 
-      barcodeScanRes = await FlutterBarcodeScanner.scanBarcode("#ff6666", "Cancel", true, ScanMode.BARCODE);
-        var db = DatabaseHelper();
-    var result = await db.getCodeItems(barcodeScanRes);
-    
-    if(result != null){
-Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => scanResult(result:result)),
-                              );
+    barcodeScanRes = await FlutterBarcodeScanner.scanBarcode(
+        "#ff6666", "Cancel", true, ScanMode.BARCODE);
+    var db = DatabaseHelper();
+    if (barcodeScanRes != "-1") {
+      var result = await db.getCodeItems(barcodeScanRes);
+
+      if (result != null) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => scanResult(result: result)),
+        );
+      } else {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => addItem(code: barcodeScanRes)),
+        );
+      }
     }
-    else{
-Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => addItem(code:barcodeScanRes)),
-                              );
-    }
-     
-       
   }
+
   @override
   Widget build(BuildContext context) {
     return (MaterialApp(
-      
         title: "INVENTRIO",
-        
         theme: ThemeData(
             buttonTheme: ButtonThemeData(
           height: 106,
           minWidth: 180,
         )),
         debugShowCheckedModeBanner: false,
-        
         home: Scaffold(
             appBar: AppBar(
               title: Center(child: Text("INVENTRIO")),
@@ -73,17 +110,17 @@ Navigator.push(
             ),
             floatingActionButtonLocation:
                 FloatingActionButtonLocation.centerDocked,
-            floatingActionButton: Builder( builder: (context) =>FloatingActionButton(
-              child: Text("SCAN"),
-              
-              onPressed: () {
-                
-                scanBarcodeNormal(context);},
-              backgroundColor: Colors.red,
-            )),
+            floatingActionButton: Builder(
+                builder: (context) => FloatingActionButton(
+                      child: Text("SCAN"),
+                      onPressed: () {
+                        scanBarcodeNormal(context);
+                      },
+                      backgroundColor: Colors.red,
+                    )),
             bottomNavigationBar: BottomAppBar(
               shape: CircularNotchedRectangle(),
-      notchMargin: 4.0,
+              notchMargin: 4.0,
               child: new Row(
                 mainAxisSize: MainAxisSize.max,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -99,51 +136,60 @@ Navigator.push(
                 ],
               ),
             ),
-            body: Column(
-              children: <Widget>[
-                SizedBox(height: 20),
-                Text(
-                  "DAY WISE INCOME ANALYSIS",
-                  style: TextStyle(
-                      color: Colors.red,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20),
-                ),
-                SizedBox(
-                    height: 410,
-                    child: Container(
-                      child: (widget.data.length <= 1)
-                          ? Text(
-                              "-------------------",
-                              style: TextStyle(
-                                  color: Colors.green,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 20),
-                            )
-                          : Sparkline(
-                              data: (widget.data.length == 1)
-                                  ? widget.data
-                                  : [0.0, 1.0],
-                              fillMode: FillMode.below,
-                              fillGradient: new LinearGradient(
-                                  begin: Alignment.topCenter,
-                                  end: Alignment.bottomCenter,
-                                  colors: [
-                                    Colors.lightGreen,
-                                    Colors.yellow,
-                                    Colors.orange
-                                  ]),
-                              lineColor: Colors.deepOrangeAccent,
-                              pointsMode: PointsMode.all,
-                              pointSize: 8.0,
-                              pointColor: Colors.black,
-                            ),
-                      padding: EdgeInsets.all(40),
-                    )),
-                Home()
-              ],
-            ))));
+            body: new RefreshIndicator(
+                onRefresh: _refreshList,
+                child:  SingleChildScrollView(
+        physics: AlwaysScrollableScrollPhysics(), 
+        child:Column(
+                  children: <Widget>[
+                    SizedBox(height: 20),
+                    Text(
+                      "DAY WISE INCOME ANALYSIS",
+                      style: TextStyle(
+                          color: Colors.red,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20),
+                    ),
+                    SizedBox(
+                        height: 410,
+                        child: Container(
+                          child: barChart(),
+                          padding: EdgeInsets.all(40),
+                        )),
+                    Home()
+                  ],
+                ))))));
   }
 
- 
+  Future<Null> _refreshList() async{
+    var db =DatabaseHelper();
+    List incomeList = new List();
+  var averageSales;
+   var data = await db.getAnalysis();
+   setState(() {
+     x = data;
+   });
+    seriesList = loadData();
+    setState(() {
+     seriesList = seriesList;
+   });
+     for (var i = 0; i < x.length; i++) {
+      incomeList.add(x[i]["income"]);
+    }
+    print(incomeList);
+    averageSales = incomeList.reduce((value, element) => value + element) /
+        incomeList.length;
+setState(() {
+     averageSales = averageSales;
+   });
+      
+    
+        
+  }
+}
+
+class Salesdata {
+  String date;
+  double sales;
+  Salesdata(this.date, this.sales);
 }

@@ -27,6 +27,7 @@ dependencies:
   sqflite: any
   path_provider: any
   flutter_barcode_scanner: ^0.1.7
+  charts_flutter: ^0.8.1
   flutter_sparkline: any
   flutter_staggered_grid_view: any
   flutter_circular_chart: any

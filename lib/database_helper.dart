@@ -109,18 +109,46 @@ return ourDb;
 
 
   }
-  Future<List<double>> getAnalysis() async{
+  Future<List> getAnalysis() async{
 
      var dbClient = await db;
-  var result = await dbClient.rawQuery("SELECT SUM($columnSp*$columnQuantity) FROM $stable GROUP BY SUBSTR($columnDate,0,11) ");
+  var result = await dbClient.rawQuery("SELECT SUBSTR($columnDate,0,11) as day,SUM($columnSp*$columnQuantity) as income FROM $stable GROUP BY SUBSTR($columnDate,0,11) ");
+  
+    return result;
+  }
+
+    Future<Map> gethiglySelling() async{
+
+     var dbClient = await db;
+  var result = await dbClient.rawQuery("SELECT $columnName as hitem FROM $stable WHERE $columnQuantity = MAX($columnQuantity) ");
+   
+    
+    return result.first;
+  }
+
+ Future<List<double>> gettotalmIncomes() async{
+
+     var dbClient = await db;
+  var result = await dbClient.rawQuery("SELECT SUM($columnSp*$columnQuantity) as income FROM $stable GROUP BY SUBSTR($columnDate,0,8) ");
   List<double> list = new List();
     for(var x in result){
       x.forEach((k,v)=>list.add(v));
     }
     return list;
+   
   }
 
+  Future<List<double>> gettotalmPurchases() async{
 
+     var dbClient = await db;
+  var result = await dbClient.rawQuery("SELECT SUM($columnCp*$columnQuantity) as investment FROM $ptable GROUP BY SUBSTR($columnDate,0,8) ");
+  List<double> list = new List();
+    for(var x in result){
+      x.forEach((k,v)=>list.add(v));
+    }
+    return list;
+   
+  }
   
 Future<List<String>> getAllItemnames() async {
 
