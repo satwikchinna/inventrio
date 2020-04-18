@@ -42,7 +42,7 @@ this._itemid = map["_itemid"];
     this.quantity = map["quantity"];
     this.doc = map["doc"];
     this.sellingprice = map["sellingprice"];
- 
+    this.saleid = map["saleid"];
     this._itemid = map["_itemid"];
   }
 }

@@ -36,7 +36,10 @@ class _SaleState extends State<Sales> {
     });
   }
 
-  
+  Future<void> deleteSale(int id) async {
+    await db.deleteSale(id);
+    _getRecords();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -108,9 +111,21 @@ class _SaleState extends State<Sales> {
                                         "${duplicateSales[position]["itemname"]}"
                                             .toUpperCase()),
                                     subtitle: new Text(
-                                        " ${Sale.fromMap(duplicateSales[position]).doc.substring(0,10)}"),
-                                    trailing: new Text(
+                                        " ${Sale.fromMap(duplicateSales[position]).doc.substring(0,10)}" "  " 
                                         "Price:${Sale.fromMap(duplicateSales[position]).sellingprice}"),
+                                    trailing: CircleAvatar(
+                                  radius: 20,
+                                  backgroundColor: Colors.red,
+                                  child: IconButton(
+                                    icon: Icon(
+                                      Icons.remove,
+                                      color: Colors.black,
+                                    ),
+                                    onPressed: () async{
+                                      db.deleteSale(Sale.fromMap(duplicateSales[position]).saleid);
+                                    },
+                                  ),
+                                ),
                                   ));
                             }))
                   ]),

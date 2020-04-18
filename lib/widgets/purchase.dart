@@ -33,7 +33,10 @@ class _PurchaseState extends State<Purchases> {
     });
   }
 
-  
+   Future<void> deletePurchase(int id) async {
+    await db.deletePurchase(id);
+    _getRecords();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -105,9 +108,21 @@ class _PurchaseState extends State<Purchases> {
                                         "${duplicatePurchases[position]["itemname"]}"
                                             .toUpperCase()),
                                     subtitle: new Text(
-                                        "${Purchase.fromMap(duplicatePurchases[position]).doc.substring(0,10)}"),
-                                    trailing: new Text(
-                                        "Cost Price:${Purchase.fromMap(duplicatePurchases[position]).costprice}"),
+                                        "${Purchase.fromMap(duplicatePurchases[position]).doc.substring(0,10)}" 
+                                        "  Price:${Purchase.fromMap(duplicatePurchases[position]).costprice}"),
+                                    trailing: CircleAvatar(
+                                  radius: 20,
+                                  backgroundColor: Colors.red,
+                                  child: IconButton(
+                                    icon: Icon(
+                                      Icons.remove,
+                                      color: Colors.black,
+                                    ),
+                                    onPressed: () {
+                                      deletePurchase(Purchase.fromMap(purchases[position]).purchaseid);
+                                    },
+                                  ),
+                                ),
                                   ));
                             }))
                   ]),

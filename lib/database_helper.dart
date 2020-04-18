@@ -143,11 +143,27 @@ return ourDb;
 
 
   }
+
+  Future<int> deleteSale(int id) async{
+       var dbClient = await db;
+       await dbClient.rawQuery("DELETE FROM $stable WHERE $columnSid = $id");
+       return 1;
+
+
+  }
+  
+  Future<int> deletePurchase(int id) async{
+       var dbClient = await db;
+       await dbClient.rawQuery("DELETE FROM $ptable WHERE $columnPid = $id");
+       return 1;
+
+
+  }
   
   Future<List> getAnalysis() async{
 
      var dbClient = await db;
-  var result = await dbClient.rawQuery("SELECT SUBSTR($columnDate,0,11) as day,SUM($columnSp*$columnQuantity) as income FROM $stable GROUP BY SUBSTR($columnDate,0,11) ");
+  var result = await dbClient.rawQuery("SELECT SUBSTR($columnDate,0,11) as day,SUM($columnSp*$columnQuantity) as income FROM $stable GROUP BY SUBSTR($columnDate,0,11) LIMIT 30 ");
   
     return result;
   }
