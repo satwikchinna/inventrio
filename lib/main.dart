@@ -13,6 +13,7 @@ import './database_helper.dart';
 
 List sales;
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   var db = DatabaseHelper();
   var data = await db.getAnalysis();
 

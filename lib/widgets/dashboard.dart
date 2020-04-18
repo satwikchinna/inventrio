@@ -46,10 +46,12 @@ monthlyPurchases = await db.gettotalmPurchases();
         home: Scaffold(
             appBar: AppBar(
               leading: IconButton(
-                icon: Icon(Icons.home, color: Colors.white),
-                onPressed: null,
+                icon: Icon(Icons.arrow_back, color: Colors.white),
+                onPressed: (){
+                  Navigator.pop(context);
+                },
               ),
-              title: Text("INVENTORY"),
+              title: Text("DASHBOARD"),
               backgroundColor: Colors.lightBlue,
             ))));
             
