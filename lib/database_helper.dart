@@ -17,6 +17,7 @@ class DatabaseHelper{
   static final columnId = '_itemid';
   static final columnName = 'itemname';
   static final columnStock = 'itemstock';
+   static final columnbarCode = 'itembarcode';
   static final columnUom = 'uom';
   static final columnSp = 'sellingprice';
   static final columnCp = 'costprice';
@@ -39,7 +40,7 @@ Future<Database> get db async{
   
    initDb() async { 
 Directory documentDirectory = await getApplicationDocumentsDirectory();
-String path = join(documentDirectory.path,"maindb1.db");
+String path = join(documentDirectory.path,"maindb2.db");
 
 var ourDb = await openDatabase(path,version: 1,onCreate: _onCreate ) ;
 return ourDb;
@@ -53,7 +54,8 @@ return ourDb;
             $columnStock REAL NOT NULL,
             $columnUom TEXT NOT NULL,
             $columnSp REAL NOT NULL,
-            $columnCp REAL NOT NULL
+            $columnCp REAL NOT NULL,
+            $columnbarCode TEXT
           )
           ''');
      await db.execute('''
@@ -107,6 +109,16 @@ return ourDb;
 
 
   }
+  Future<List<double>> getAnalysis() async{
+
+     var dbClient = await db;
+  var result = await dbClient.rawQuery("SELECT SUM($columnSp) FROM $stable GROUP BY SUBSTR($columnDate,0,11) ");
+  List<double> list = new List();
+    for(var x in result){
+      x.forEach((k,v)=>list.add(v));
+    }
+    return list;
+  }
 
 
   
@@ -126,6 +138,13 @@ Future<List> getAllItems() async {
 
   var dbClient = await db;
   var result = await dbClient.rawQuery("SELECT * FROM $itable ORDER BY $columnId DESC");
+  return result.toList();
+}
+
+Future<List> getCodeItems(String code) async {
+
+  var dbClient = await db;
+  var result = await dbClient.rawQuery("SELECT * FROM $itable WHERE $columnbarCode = '$code'");
   return result.toList();
 }
 

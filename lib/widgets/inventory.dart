@@ -3,27 +3,30 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:async/async.dart';
+import 'package:flutter/material.dart' as prefix0;
+import 'package:inventrio/widgets/addItem.dart';
+import '../main.dart';
 import '../models/itemModel.dart';
 import '../database_helper.dart';
 
 class Inventory extends StatefulWidget {
+
+  var id;
+  Inventory({Key key, @required this.id}) : super(key: key);
   @override
   _InventoryState createState() => new _InventoryState();
 }
 
 class _InventoryState extends State<Inventory> {
-  TextEditingController _itemnameController = new TextEditingController();
-  TextEditingController _itemstockController = new TextEditingController();
-  TextEditingController _itemspController = new TextEditingController();
-  TextEditingController _itemcpController = new TextEditingController();
+
+
+
+
+
   TextEditingController editingController = new TextEditingController();
-  List<String> _itemUOM = ['Kgs', 'Litres', 'Nos']; // Option 2
-  String _dropdownValue = "Kgs";
-  String newValue;
   List items;
   List duplicateItems;
 
-  bool _validate = false;
   var db = DatabaseHelper();
   @override
   initState() {
@@ -40,147 +43,12 @@ class _InventoryState extends State<Inventory> {
     });
   }
 
-  void _showDialog() {
-    var alert = AlertDialog(
-      content: StatefulBuilder(
-        // You need this, notice the parameters below:
-        builder: (BuildContext context, StateSetter setState) {
-          return (Column(
-            children: <Widget>[
-              TextField(
-                  controller: _itemnameController,
-                  autofocus: true,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                        fillColor: Colors.blue,
-                        focusColor: Colors.blue,
-                        prefixIcon: Icon(Icons.note_add),
-                      labelText: "Item name",
-                      hintText: "Sugar",
-                      errorText: _validate ? "Please fill a valid value" : null,
-                      )), SizedBox(height: 10),
-              TextField(
-                  controller: _itemstockController,
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                        fillColor: Colors.blue,
-                        focusColor: Colors.blue,
-                        prefixIcon: Icon(Icons.note_add),
-                      labelText: "Stock",
-                      errorText:
-                          _validate ? "Please fill a valid value" : null)), SizedBox(height: 10),
-              TextField(
-                  controller: _itemspController,
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                        fillColor: Colors.blue,
-                        focusColor: Colors.blue,
-                        prefixIcon: Icon(Icons.note_add),
-                      labelText: "Selling price",
-                      errorText:
-                          _validate ? "Please fill a valid value" : null)), SizedBox(height: 10),
-              TextField(
-                  controller: _itemcpController,
-                  keyboardType: TextInputType.number,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                        fillColor: Colors.blue,
-                        focusColor: Colors.blue,
-                        prefixIcon: Icon(Icons.note_add),
-                      labelText: "Purchase price",
-                      errorText:
-                          _validate ? "Please fill a valid value" : null)),
-              DropdownButton<String>(
-                // Not necessary for Option 1
-                value: _dropdownValue,
-                onChanged: (newValue) {
-                  setState(() {
-                    _dropdownValue = newValue;
-                  });
-                },
-                items: _itemUOM.map((location) {
-                  return DropdownMenuItem(
-                    child: new Text(location),
-                    value: location,
-                  );
-                }).toList(),
-              )
-            ],
-          ));
-        },
-      ),
-      actions: <Widget>[
-        FlatButton(
-            onPressed: () {
-              if (_itemnameController.text.isEmpty ||
-                  _itemstockController.text.isEmpty ||
-                  _itemspController.text.isEmpty ||
-                  _itemcpController.text.isEmpty) {
-                setState(() {
-                  _itemnameController.text.isEmpty
-                      ? _validate = true
-                      : _validate = false;
-                  _itemstockController.text.isEmpty
-                      ? _validate = true
-                      : _validate = false;
-                  _itemspController.text.isEmpty
-                      ? _validate = true
-                      : _validate = false;
-                  _itemcpController.text.isEmpty
-                      ? _validate = true
-                      : _validate = false;
-                });
-              } else {
-                _submitdataHandler(
-                    _itemnameController.text,
-                    _itemstockController.text,
-                    _itemspController.text,
-                    _itemcpController.text,
-                    _dropdownValue);
-                _itemnameController.clear();
-                _itemstockController.clear();
-                _itemcpController.clear();
-                _itemspController.clear();
-                Navigator.pop(context);
-                _validate = false;
-              }
-            },
-            child: Text("Save")),
-        FlatButton(
-            onPressed: () {
-              _validate = false;
-              Navigator.pop(context);
-            },
-            child: Text("Cancel"))
-      ],
-    );
-
-    showDialog(
-        context: context,
-        builder: (_) {
-          return (Center(
-            // Aligns the container to center
-
-            child: Container(
-              // A simplified version of dialog.
-              width: 500,
-              height: 454,
-
-              child: SingleChildScrollView(
-                child: Stack(
-                  children: <Widget>[alert],
-                ),
-              ),
-            ),
-          ));
-        });
-  }
+ 
 
   @override
   Widget build(BuildContext context) {
-    return (MaterialApp(
+    return  
+      (MaterialApp(
         title: "INVENTRIO",
         theme: ThemeData(
             buttonTheme: ButtonThemeData(
@@ -191,8 +59,16 @@ class _InventoryState extends State<Inventory> {
         home: Scaffold(
             appBar: AppBar(
               leading: IconButton(
-                icon: Icon(Icons.arrow_back, color: Colors.white),
-                onPressed: () => Navigator.of(context).pop(),
+                icon: Icon(Icons.home, color: Colors.white),
+                onPressed: () async{
+                   var db = DatabaseHelper();
+  var data = await db.getAnalysis();
+  Navigator.pop(context);
+                  Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => myApp(data:data)),
+                              );},
               ),
               title: Text("INVENTORY"),
               backgroundColor: Colors.lightBlue,
@@ -201,7 +77,14 @@ class _InventoryState extends State<Inventory> {
               foregroundColor: Colors.black54,
               backgroundColor: Colors.red,
               child: Icon(Icons.add),
-              onPressed: _showDialog,
+              onPressed: (){
+                     Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => addItem()),
+                              );
+                    
+              },
             ),
             body: Material(
                 color: Colors.white,
@@ -285,22 +168,17 @@ class _InventoryState extends State<Inventory> {
 
   }
 
-  Future _submitdataHandler(
-      String name, String stock, String sp, String cp, String uom) async {
-    
-    
-    var db = new DatabaseHelper();
-    int idofsaved = await db.saveItem(new Item(name, double.parse(stock),
-        uom, double.parse(sp), double.parse(cp)));
-    dynamic updateditems = await db.getItem(idofsaved);
+  loadAsyncData() async {  
+
+  if(widget.id != null ){
+
+  var db = new DatabaseHelper();
+   dynamic updateditems = await db.getItem(widget.id);
     setState(() {
       duplicateItems.insert(0, updateditems);
     });
-  }
 
-  loadAsyncData() async {
-    var db = new DatabaseHelper();
-    List updateditems = await db.getAllItems();
-    return updateditems;
+  }
+  
   }
 }

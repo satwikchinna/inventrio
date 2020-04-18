@@ -26,6 +26,10 @@ dependencies:
   cupertino_icons: ^0.1.2
   sqflite: any
   path_provider: any
+  flutter_barcode_scanner: ^0.1.7
+  flutter_sparkline: any
+  flutter_staggered_grid_view: any
+  flutter_circular_chart: any
   autocomplete_textfield: any
 
 dev_dependencies:
