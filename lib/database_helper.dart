@@ -95,7 +95,7 @@ return ourDb;
    void saveSale(String name,String doc,double quantity,double price) async{
        var dbClient = await db;
        dbClient.rawQuery("INSERT INTO $stable(quantity,sellingprice,doc,_itemid) VALUES($quantity,$price,'$doc',(SELECT _itemid FROM $itable WHERE $columnName = '$name')) ");
-       dbClient.rawQuery("UPDATE $itable SET $columnStock = $columnStock - $quantity , $columnSp = $price WHERE $columnName = '$name' ");
+       dbClient.rawQuery("UPDATE $itable SET $columnStock =CASE WHEN  ($columnStock - $quantity) < 0 THEN 0 ELSE ($columnStock - $quantity) END ,$columnSp = $price WHERE $columnName = '$name' ");
        
 
 
@@ -112,7 +112,7 @@ return ourDb;
   Future<List<double>> getAnalysis() async{
 
      var dbClient = await db;
-  var result = await dbClient.rawQuery("SELECT SUM($columnSp) FROM $stable GROUP BY SUBSTR($columnDate,0,11) ");
+  var result = await dbClient.rawQuery("SELECT SUM($columnSp*$columnQuantity) FROM $stable GROUP BY SUBSTR($columnDate,0,11) ");
   List<double> list = new List();
     for(var x in result){
       x.forEach((k,v)=>list.add(v));
@@ -141,11 +141,12 @@ Future<List> getAllItems() async {
   return result.toList();
 }
 
-Future<List> getCodeItems(String code) async {
+Future getCodeItems(String code) async {
 
   var dbClient = await db;
   var result = await dbClient.rawQuery("SELECT * FROM $itable WHERE $columnbarCode = '$code'");
-  return result.toList();
+  if(result.length == 0) return null;
+   return result.first;
 }
 
 Future<List> getAllSales() async {

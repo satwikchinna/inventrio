@@ -9,7 +9,7 @@ import '../database_helper.dart';
 class Home extends StatelessWidget {
 Route _createRoute() {
   return PageRouteBuilder(
-    pageBuilder: (context, animation, secondaryAnimation) => Inventory(),
+    pageBuilder: (context, animation, secondaryAnimation) => Inventory(id : null),
     transitionsBuilder: (context, animation, secondaryAnimation, child) {
       var begin = Offset(0.0, 1.0);
       var end = Offset.zero;

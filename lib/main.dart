@@ -3,6 +3,7 @@ import 'package:flutter_sparkline/flutter_sparkline.dart';
 import 'package:inventrio/widgets/addItem.dart';
 import 'package:inventrio/widgets/dashboard.dart';
 import 'package:inventrio/widgets/sale.dart';
+import 'package:inventrio/widgets/scanResult.dart';
 import './widgets/home.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 
@@ -28,24 +29,43 @@ class myApp extends StatefulWidget {
 
 class _MyappState extends State<myApp> {
   String _scanBarcode;
-Future scanBarcodeNormal( BuildContext context) async {
+Future scanBarcodeNormal(BuildContext context ) async {
     String barcodeScanRes;
 
       barcodeScanRes = await FlutterBarcodeScanner.scanBarcode("#ff6666", "Cancel", true, ScanMode.BARCODE);
         var db = DatabaseHelper();
     var result = await db.getCodeItems(barcodeScanRes);
+    
+    if(result != null){
+Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => scanResult(result:result)),
+                              );
+    }
+    else{
+Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => addItem(code:barcodeScanRes)),
+                              );
+    }
+     
        
   }
   @override
   Widget build(BuildContext context) {
     return (MaterialApp(
+      
         title: "INVENTRIO",
+        
         theme: ThemeData(
             buttonTheme: ButtonThemeData(
           height: 106,
           minWidth: 180,
         )),
         debugShowCheckedModeBanner: false,
+        
         home: Scaffold(
             appBar: AppBar(
               title: Center(child: Text("INVENTRIO")),
@@ -53,12 +73,14 @@ Future scanBarcodeNormal( BuildContext context) async {
             ),
             floatingActionButtonLocation:
                 FloatingActionButtonLocation.centerDocked,
-            floatingActionButton: FloatingActionButton(
+            floatingActionButton: Builder( builder: (context) =>FloatingActionButton(
               child: Text("SCAN"),
               
-              onPressed: () {scanBarcodeNormal(context);},
+              onPressed: () {
+                
+                scanBarcodeNormal(context);},
               backgroundColor: Colors.red,
-            ),
+            )),
             bottomNavigationBar: BottomAppBar(
               shape: CircularNotchedRectangle(),
       notchMargin: 4.0,

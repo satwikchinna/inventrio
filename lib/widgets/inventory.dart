@@ -81,7 +81,7 @@ class _InventoryState extends State<Inventory> {
                      Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) => addItem()),
+                                    builder: (context) => addItem(code: null,)),
                               );
                     
               },

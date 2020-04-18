@@ -7,8 +7,8 @@ import 'inventory.dart';
 
 class addItem extends StatefulWidget{
 
-  var result;
-  addItem({Key key, @required this.result}) : super(key: key);
+  var code;
+  addItem({Key key, @required this.code}) : super(key: key);
 
 
 
@@ -18,19 +18,7 @@ class addItem extends StatefulWidget{
 
 class _Additem extends State<addItem> {
   List result;
-
- @override
-  initState() {
-    super.initState();
-    
-  }
-
-
- 
-List items;
-  List duplicateItems;
-
- TextEditingController _itemnameController = new TextEditingController();
+  TextEditingController _itemnameController = new TextEditingController();
   TextEditingController _itemstockController = new TextEditingController();
   TextEditingController _itemspController = new TextEditingController();
   TextEditingController _itemcpController = new TextEditingController();
@@ -40,6 +28,27 @@ List items;
   String _dropdownValue = "Kgs";
   String newValue;
   bool _validate = false;
+bool enabled = true;
+ @override
+  initState() {
+    super.initState();
+    checkCode();
+    
+  }
+checkCode(){
+  if(widget.code != null){
+setState(() {
+  enabled = false;
+  _itembarcodeController.text = widget.code;
+});
+  }
+}
+
+ 
+List items;
+  List duplicateItems;
+
+ 
 
 
   @override
@@ -112,6 +121,7 @@ List items;
                           _validate ? "Please fill a valid value" : null)),
              SizedBox(height: 10), TextField(
                   controller: _itembarcodeController,
+                  enabled:enabled,
                   keyboardType: TextInputType.number,
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
