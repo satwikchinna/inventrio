@@ -13,6 +13,7 @@ import './database_helper.dart';
 
 List sales;
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   var db = DatabaseHelper();
   var data = await db.getAnalysis();
 
@@ -33,14 +34,14 @@ class _MyappState extends State<myApp> {
   var averageSales;
   @override
   void initState() {
-    x = widget.data;
+    if(widget.data.length > 0){x = widget.data;
     for (var i = 0; i < x.length; i++) {
       incomeList.add(x[i]["income"]);
     }
     print(incomeList);
     seriesList = loadData();
     averageSales = incomeList.reduce((value, element) => value + element) /
-        incomeList.length;
+        incomeList.length;}
   }
 
   List<charts.Series<Salesdata, String>> loadData() {
@@ -153,7 +154,7 @@ class _MyappState extends State<myApp> {
                     SizedBox(
                         height: 410,
                         child: Container(
-                          child: barChart(),
+                          child: (widget.data.length > 0) ?barChart() : Text("--------------"),
                           padding: EdgeInsets.all(40),
                         )),
                     Home()
