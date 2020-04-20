@@ -46,6 +46,7 @@ class _PurchaseState extends State<Purchases> {
         )),
         debugShowCheckedModeBanner: false,
         home: Scaffold(
+         
             appBar: AppBar(
               leading: IconButton(
                 icon: Icon(Icons.arrow_back, color: Colors.white),

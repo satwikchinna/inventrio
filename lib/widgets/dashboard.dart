@@ -44,6 +44,7 @@ monthlyPurchases = await db.gettotalmPurchases();
         )),
         debugShowCheckedModeBanner: false,
         home: Scaffold(
+         
             appBar: AppBar(
               leading: IconButton(
                 icon: Icon(Icons.home, color: Colors.white),

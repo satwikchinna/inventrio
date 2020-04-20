@@ -57,9 +57,10 @@ class _InventoryState extends State<Inventory> {
         )),
         debugShowCheckedModeBanner: false,
         home: Scaffold(
+         
             appBar: AppBar(
               leading: IconButton(
-                icon: Icon(Icons.home, color: Colors.white),
+                icon: Icon(Icons.arrow_back, color: Colors.white),
                 onPressed: () async{
                    var db = DatabaseHelper();
   var data = await db.getAnalysis();
@@ -87,7 +88,7 @@ class _InventoryState extends State<Inventory> {
               },
             ),
             body: Material(
-                color: Colors.white,
+              
                 child: Container(
                   padding: EdgeInsets.all(10),
                   margin: EdgeInsets.all(10),
@@ -100,6 +101,7 @@ class _InventoryState extends State<Inventory> {
                       obscureText: false,
                       decoration: InputDecoration(
                         border: OutlineInputBorder(),
+                        
                         fillColor: Colors.blue,
                         focusColor: Colors.blue,
                         prefixIcon: Icon(Icons.search),
