@@ -136,7 +136,7 @@ class _MyappState extends State<myApp> {
                           fontWeight: FontWeight.bold,
                           fontSize: 20),
                     ),
-                     SizedBox(height: 385, child:ChartDay(data: x,)),
+                     ChartDay(data: x,),
                                         Home()
                                       ],
                                     )))),
@@ -266,7 +266,16 @@ incomeList = [];
   }
 
   barChart() {
-    return SizedBox(height: 100 ,child:charts.BarChart(seriesList, animate: true, vertical: true));
+    return  Expanded(child:charts.BarChart(seriesList, animate: true, vertical: true, behaviors: [
+                   new charts.SlidingViewport(),
+                   new charts.PanAndZoomBehavior(),
+                   new charts.SeriesLegend(
+                     entryTextStyle: charts.TextStyleSpec(
+                        color: charts.MaterialPalette.black,
+                        
+                        fontFamily: 'Normal',
+                        fontSize: 15),
+                   )]));
   }
 
 
@@ -282,7 +291,7 @@ incomeList = [];
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-                        height: (MediaQuery.of(context).size.height*45)/100,
+                        height: (MediaQuery.of(context).size.height*40)/100,
                         child: Container(
                           child: (widget.data.length > 0) ?barChart() : Text("--------------"),
                           padding: EdgeInsets.all(40),

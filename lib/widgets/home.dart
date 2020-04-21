@@ -40,7 +40,7 @@ class Home extends StatelessWidget {
                     alignment: Alignment.center,
                       padding: EdgeInsets.only(
                           left:(MediaQuery.of(context).size.width * 4.5) / 100,
-                          top:(MediaQuery.of(context).size.width * 1) / 100,
+                          top:(MediaQuery.of(context).size.width * 5) / 100,
                           bottom:(MediaQuery.of(context).size.width * 4.5) / 100),
                       child: Row(
                         children: <Widget>[
@@ -117,12 +117,22 @@ class Home extends StatelessWidget {
                                   (MediaQuery.of(context).size.height * 13) /
                                       100,
                               child: RaisedButton(
-                                onPressed: () {
-                                  Navigator.push(
+                                onPressed: () async{
+var db = DatabaseHelper();
+                                  final snackBar = SnackBar(content: Text('Please perform more transactions to unlock dashboard!'));
+var data1 = await db.gettotalmIncomes();
+var data2 = await db.gettotalmPurchases();
+if(data1.length != 0 && data2.length != 0){
+  Navigator.push(
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) => Dashboard()),
                                   );
+}
+else{
+  Scaffold.of(context).showSnackBar(snackBar);
+}
+                                
                                 },
                                 child: Text("DASHBOARD",
                                     style: TextStyle(

@@ -116,37 +116,39 @@ return ourDb;
   
     return result;
   }
-
-    Future<Map> gethiglySelling() async{
+Future<List<Map>>  gethiglySelling() async{
 
      var dbClient = await db;
-  var result = await dbClient.rawQuery("SELECT $columnName as hitem FROM $stable WHERE $columnQuantity = MAX($columnQuantity) ");
+     var result = await dbClient.rawQuery("SELECT $columnName as hitem FROM $itable WHERE $columnId = (SELECT $columnId from $stable ORDER BY $columnQuantity DESC LIMIT 1) ");
    
     
-    return result.first;
+    return result;
   }
 
- Future<List<double>> gettotalmIncomes() async{
+  Future<List<Map>>  gethiglyProfitable() async{
 
      var dbClient = await db;
-  var result = await dbClient.rawQuery("SELECT SUM($columnSp*$columnQuantity) as income FROM $stable GROUP BY SUBSTR($columnDate,0,8) ");
-  List<double> list = new List();
-    for(var x in result){
-      x.forEach((k,v)=>list.add(v));
-    }
-    return list;
+     var result = await dbClient.rawQuery("SELECT $columnName as pitem FROM $itable WHERE $columnId = (SELECT $columnId from $stable ORDER BY $columnQuantity*$columnSp DESC LIMIT 1) ");
+   
+    
+    return result;
+  }
+
+ Future<List<Map>> gettotalmIncomes() async{
+
+     var dbClient = await db;
+  var result = await dbClient.rawQuery("SELECT SUBSTR($columnDate,0,8) as day, SUM($columnSp*$columnQuantity) as income FROM $stable GROUP BY SUBSTR($columnDate,0,8) ");
+ 
+    return result;
    
   }
 
-  Future<List<double>> gettotalmPurchases() async{
+  Future<List<Map>> gettotalmPurchases() async{
 
      var dbClient = await db;
-  var result = await dbClient.rawQuery("SELECT SUM($columnCp*$columnQuantity) as investment FROM $ptable GROUP BY SUBSTR($columnDate,0,8) ");
-  List<double> list = new List();
-    for(var x in result){
-      x.forEach((k,v)=>list.add(v));
-    }
-    return list;
+  var result = await dbClient.rawQuery("SELECT SUBSTR($columnDate,0,8) as day, SUM($columnCp*$columnQuantity) as income FROM $ptable GROUP BY SUBSTR($columnDate,0,8) ");
+ 
+    return result;
    
   }
   
