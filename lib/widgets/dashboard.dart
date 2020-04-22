@@ -204,10 +204,7 @@ incomeList = [];
   }
 
   barChart() {
-    return Expanded(child:charts.BarChart(seriesList, animate: true, vertical: true, behaviors: [
-                   new charts.SlidingViewport(),
-                   new charts.PanAndZoomBehavior(),
-                   ]));
+    return charts.BarChart(seriesList, animate: true, vertical: true);
   }
 
   @override

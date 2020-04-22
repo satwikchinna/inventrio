@@ -266,16 +266,8 @@ incomeList = [];
   }
 
   barChart() {
-    return  Expanded(child:charts.BarChart(seriesList, animate: true, vertical: true, behaviors: [
-                   new charts.SlidingViewport(),
-                   new charts.PanAndZoomBehavior(),
-                   new charts.SeriesLegend(
-                     entryTextStyle: charts.TextStyleSpec(
-                        color: charts.MaterialPalette.black,
-                        
-                        fontFamily: 'Normal',
-                        fontSize: 15),
-                   )]));
+    return  charts.BarChart(seriesList, animate: true, vertical: true
+                   );
   }
 
 
