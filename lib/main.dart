@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:inventrio/widgets/addItem.dart';
 import 'package:inventrio/widgets/dashboard.dart';
+import 'package:inventrio/widgets/login.dart';
 import 'package:inventrio/widgets/sale.dart';
 import 'package:inventrio/widgets/scanResult.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import './widgets/home.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
 import 'dart:math';
@@ -13,10 +15,12 @@ import './database_helper.dart';
 List sales;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  var email = prefs.getString('email');
   var db = DatabaseHelper();
   var data = await db.getAnalysis();
 
-  runApp(myApp(data: data));
+  runApp(email == null ? MaterialApp(debugShowCheckedModeBanner: false  ,home:LoginScreen()):myApp( data: data));
 }
 
 class myApp extends StatefulWidget {
@@ -89,8 +93,17 @@ class _MyappState extends State<myApp> {
         home: Scaffold(
          
             appBar: AppBar(
-              title: Center(child: Text("INVENTRIO")),
+              centerTitle: true,
+              title: Text("INVENTRIO"),
               backgroundColor: Colors.lightBlue,
+               actions: <Widget>[
+    FlatButton(
+      textColor: Colors.white,
+      onPressed: () {},
+      child:_signout() ,
+      shape: CircleBorder(side: BorderSide(color: Colors.transparent)),
+    ),
+  ],
             ),
             floatingActionButtonLocation:
                 FloatingActionButtonLocation.centerDocked,
@@ -312,3 +325,16 @@ class SizeConfig {
   blockSizeVertical = screenHeight / 100;
  }
 }
+ Widget _signout() {
+return Builder(
+                builder: (context) =>IconButton(icon: Icon(Icons.power_settings_new),onPressed:()async{
+ SharedPreferences prefs = await SharedPreferences.getInstance();
+            prefs.remove('email');
+            Navigator.pushReplacement(context,
+                MaterialPageRoute(builder: (BuildContext ctx) => LoginScreen()));
+
+        
+      }));
+      
+      
+      }
