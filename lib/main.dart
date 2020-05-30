@@ -11,6 +11,7 @@ import 'dart:math';
 import 'package:charts_flutter/flutter.dart' as charts;
 import './models/saleModel.dart';
 import './database_helper.dart';
+import './widgets/purchaseAdvice.dart';
 
 List sales;
 void main() async {
@@ -128,10 +129,16 @@ class _MyappState extends State<myApp> {
                     icon: Icon(Icons.note_add),
                     onPressed: () {},
                   ),
-                  IconButton(
-                    icon: Icon(Icons.settings),
-                    onPressed: () {},
-                  ),
+              Builder(
+                 builder: (context) =>   IconButton(
+                    icon: Icon(Icons.receipt),
+                    onPressed:(){
+                    Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => PurchaseAdvice()),
+                                  );},
+                  ),)
                 ],
               ),
             ),
