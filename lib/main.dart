@@ -12,6 +12,7 @@ import 'package:charts_flutter/flutter.dart' as charts;
 import './models/saleModel.dart';
 import './database_helper.dart';
 import './widgets/purchaseAdvice.dart';
+import './widgets/todoList.dart';
 
 List sales;
 void main() async {
@@ -125,10 +126,17 @@ class _MyappState extends State<myApp> {
                 mainAxisSize: MainAxisSize.max,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  IconButton(
+                 Builder(
+                 builder: (context) =>    IconButton(
                     icon: Icon(Icons.note_add),
-                    onPressed: () {},
-                  ),
+                    onPressed: () {
+                      Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => TodoList()),
+                                  );
+                    },
+                  ),),
               Builder(
                  builder: (context) =>   IconButton(
                     icon: Icon(Icons.receipt),

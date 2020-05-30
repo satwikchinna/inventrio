@@ -7,12 +7,14 @@ import 'package:path_provider/path_provider.dart';
 import 'models/itemModel.dart';
 import 'models/saleModel.dart';
 import 'models/purchaseModel.dart';
+import 'models/todoModel.dart';
 
 class DatabaseHelper{
 
  static final itable = 'itemlist';
   static final stable = 'saleslist';
   static final ptable = 'purchaseslist';
+  static final rtable = 'todolist';
   
   static final columnId = '_itemid';
   static final columnName = 'itemname';
@@ -25,6 +27,9 @@ class DatabaseHelper{
   static final columnPid = 'purchaseid';
   static final columnQuantity = 'quantity';
   static final columnDate = 'doc';
+  static final columnTime = 'time';
+  static final columnRemainder = 'remainder';
+  static final columnRid = 'remainderid';
 static final DatabaseHelper _instance = new DatabaseHelper.internal();
 factory DatabaseHelper() => _instance;
 static Database _db;
@@ -81,6 +86,13 @@ return ourDb;
           
           )
           ''');
+          await db.execute('''
+          CREATE TABLE $rtable(
+            $columnRid INTEGER PRIMARY KEY,
+            $columnTime TEXT NOT NULL,
+            $columnRemainder TEXT NOT NULL 
+          )
+          ''');
 
 
   }
@@ -109,6 +121,14 @@ return ourDb;
 
 
   }
+  Future<int> saveTodo(Todo todo) async{
+       var dbClient = await db;
+       int res = await dbClient.insert("$rtable",todo.toMap());
+       return res;
+
+
+  }
+  
   Future<List> getAnalysis() async{
 
      var dbClient = await db;
@@ -190,6 +210,13 @@ Future<List> getAllPurchases() async {
 
   var dbClient = await db;
   var result = await dbClient.rawQuery("SELECT b.*, a.itemname FROM $ptable AS b INNER JOIN $itable as a ON (b._itemid=a._itemid) ORDER BY $columnPid DESC");
+  return result.toList();
+}
+
+Future<List> getAllTodos() async {
+
+  var dbClient = await db;
+  var result = await dbClient.rawQuery("SELECT * FROM $rtable ORDER BY $columnTime DESC");
   return result.toList();
 }
 
