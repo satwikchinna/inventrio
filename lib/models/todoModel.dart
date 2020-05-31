@@ -4,7 +4,7 @@ class Todo {
   String remainder;
   
 
-  Todo(this.remainderid, this.time, this.remainder);
+  Todo(this.time, this.remainder);
 
   Todo.map(dynamic obj) {
     this.remainderid = obj["remainderid"];

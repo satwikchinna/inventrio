@@ -128,6 +128,13 @@ return ourDb;
 
 
   }
+  Future<int> deleteTodo(int id) async{
+       var dbClient = await db;
+       await dbClient.rawQuery("DELETE FROM $rtable WHERE $columnRid = $id");
+       return 1;
+
+
+  }
   
   Future<List> getAnalysis() async{
 
