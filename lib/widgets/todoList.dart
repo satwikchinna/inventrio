@@ -51,8 +51,8 @@ showAlertDialog(BuildContext context) {
       if(editingController.text.trim() != ""){
       createTodo(editingController.text);
       editingController.clear();
+    Navigator.of(context, rootNavigator: true).pop();
       _getRecords();  
-      Navigator.of(context).pop();
       }  
     },  
   );  
@@ -77,7 +77,7 @@ showAlertDialog(BuildContext context) {
   // show the dialog  
   showDialog(  
     context: context,  
-    builder: (BuildContext context) {  
+    builder: ( context) {  
       return alert;  
     },  
   );  
@@ -105,7 +105,7 @@ showAlertDialog(BuildContext context) {
               backgroundColor: Colors.red,
               child: Icon(Icons.add),
               onPressed: () {
-                showAlertDialog(context); 
+               showAlertDialog(context);
               },
             ),
             body: Material(
