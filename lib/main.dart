@@ -4,6 +4,7 @@ import 'package:inventrio/widgets/dashboard.dart';
 import 'package:inventrio/widgets/login.dart';
 import 'package:inventrio/widgets/sale.dart';
 import 'package:inventrio/widgets/scanResult.dart';
+import 'package:inventrio/widgets/settings.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import './widgets/home.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
@@ -95,6 +96,17 @@ class _MyappState extends State<myApp> {
         home: Scaffold(
          
             appBar: AppBar(
+              leading: Builder(
+                 builder: (context) =>    IconButton(
+                    icon: Icon(Icons.settings),
+                    onPressed: () {
+                      Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => Settings()),
+                                  );
+                    },
+                  ),),
               centerTitle: true,
               title: Text("INVENTRIO"),
               backgroundColor: Colors.lightBlue,

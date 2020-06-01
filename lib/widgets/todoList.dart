@@ -52,7 +52,7 @@ showAlertDialog(BuildContext context) {
       createTodo(editingController.text);
       editingController.clear();
       _getRecords();  
-      Navigator.of(context).pop();
+      Navigator.of(context, rootNavigator: true).pop();
       }  
     },  
   );  
