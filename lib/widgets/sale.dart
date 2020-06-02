@@ -59,7 +59,7 @@ class _SaleState extends State<Sales> {
               backgroundColor: Colors.lightBlue,
             ),
             floatingActionButton: FloatingActionButton(
-              foregroundColor: Colors.black54,
+              foregroundColor: Colors.white,
               backgroundColor: Colors.red,
               child: Icon(Icons.add),
               onPressed:() {

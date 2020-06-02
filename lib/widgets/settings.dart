@@ -8,9 +8,10 @@ class Settings extends StatefulWidget {
 }
 
 class _SettingsState extends State<Settings> {
-
-  TextEditingController tpaController;
-  TextEditingController cpaController;
+  static String tpa;
+  static String cpa;
+  TextEditingController tpaController = TextEditingController();
+  TextEditingController cpaController = TextEditingController();
 
    @override
    void initState() { 
@@ -20,16 +21,21 @@ class _SettingsState extends State<Settings> {
    
    void setSettings() async{
      SharedPreferences prefs = await SharedPreferences.getInstance();
-     tpaController = new TextEditingController(text : prefs.getString('TPA'));
-     cpaController = new TextEditingController(text : prefs.getString('CPA'));
+      tpa=prefs.getString('TPA');
+      cpa=prefs.getString('CPA');
+      setState(() {
+        tpaController.text=tpa;
+        cpaController.text=cpa;
+      });
      
    }
 
-   Future<void> setting() async {
+   Future<void> setting(String tpa,String cpa) async {
    SharedPreferences prefs = await SharedPreferences.getInstance();
-   if(tpaController.text != "" && cpaController.text != ""){
-     prefs.setString('TPA', tpaController.text);
-     prefs.setString('CPA', cpaController.text);
+   if(tpa != "" && cpa != ""){
+     prefs.setString('TPA', tpa);
+     prefs.setString('CPA', cpa);
+     Navigator.of(context).pop();
    }
 
   }
@@ -51,11 +57,11 @@ class _SettingsState extends State<Settings> {
               actions: <Widget>[],
             ),
             floatingActionButton: FloatingActionButton(
-              foregroundColor: Colors.black54,
+              foregroundColor: Colors.white,
               backgroundColor: Colors.red,
               child: Icon(Icons.check),
               onPressed: () {
-                 setting();
+                 setting(tpaController.text,cpaController.text);
               },
             ),
             body: Material(

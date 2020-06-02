@@ -13,7 +13,7 @@ var recentCities;
 
 getcities() async{
   cities = await db.getAllItemnames();
- recentCities = ['sugar'];
+ recentCities = [];
   }
  
 

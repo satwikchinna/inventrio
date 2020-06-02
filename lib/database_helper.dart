@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
 import 'models/itemModel.dart';
 import 'models/saleModel.dart';
 import 'models/purchaseModel.dart';
@@ -104,6 +104,14 @@ return ourDb;
 
   }
 
+  getSettings() async{
+     SharedPreferences prefs = await SharedPreferences.getInstance();
+     return prefs;
+
+  }
+
+
+
    void saveSale(String name,String doc,double quantity,double price) async{
        var dbClient = await db;
        dbClient.rawQuery("INSERT INTO $stable(quantity,sellingprice,doc,_itemid) VALUES($quantity,$price,'$doc',(SELECT _itemid FROM $itable WHERE $columnName = '$name')) ");
@@ -168,6 +176,17 @@ Future<List<Map>>  gethiglySelling() async{
  
     return result;
    
+  }
+
+  Future<List<Map>> getAdvice() async{
+    SharedPreferences prefs = await getSettings();
+    var tpa = prefs.getString('TPA');
+    var cpa = prefs.getString('CPA');
+     var dbClient = await db;
+  var result = await dbClient.rawQuery("SELECT ((SUM(b.$columnQuantity)/$cpa)*$tpa) as advice,a.$columnUom as uom ,a.$columnStock as stock, a.itemname as item FROM $stable AS b INNER JOIN $itable as a ON (b._itemid=a._itemid) WHERE  CAST(julianday('now')-julianday(SUBSTR(b.$columnDate,0,11)) as Integer) <= $cpa GROUP BY b.$columnId");
+ 
+    return result;
+  
   }
 
   Future<List<Map>> gettotalmPurchases() async{
