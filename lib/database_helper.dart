@@ -154,7 +154,7 @@ return ourDb;
 Future<List<Map>>  gethiglySelling() async{
 
      var dbClient = await db;
-     var result = await dbClient.rawQuery("SELECT $columnName as hitem FROM $itable WHERE $columnId = (SELECT $columnId from $stable ORDER BY $columnQuantity DESC LIMIT 1) ");
+     var result = await dbClient.rawQuery("SELECT $columnName as hitem from $itable WHERE $columnId = (SELECT $columnId from $stable GROUP BY $columnId ORDER BY SUM($columnQuantity) DESC LIMIT 1 )");
    
     
     return result;
@@ -163,7 +163,7 @@ Future<List<Map>>  gethiglySelling() async{
   Future<List<Map>>  gethiglyProfitable() async{
 
      var dbClient = await db;
-     var result = await dbClient.rawQuery("SELECT $columnName as pitem FROM $itable WHERE $columnId = (SELECT $columnId from $stable ORDER BY $columnQuantity*$columnSp DESC LIMIT 1) ");
+     var result = await dbClient.rawQuery("SELECT $columnName as hitem FROM $itable WHERE $columnId = (SELECT $columnId from $stable GROUP BY $columnId ORDER BY SUM($columnQuantity)*AVG($columnSp) DESC LIMIT 1) ");
    
     
     return result;
@@ -183,7 +183,7 @@ Future<List<Map>>  gethiglySelling() async{
     var tpa = prefs.getString('TPA');
     var cpa = prefs.getString('CPA');
      var dbClient = await db;
-  var result = await dbClient.rawQuery("SELECT ((SUM(b.$columnQuantity)/$cpa)*$tpa) as advice,a.$columnUom as uom ,a.$columnStock as stock, a.itemname as item FROM $stable AS b INNER JOIN $itable as a ON (b._itemid=a._itemid) WHERE  CAST(julianday('now')-julianday(SUBSTR(b.$columnDate,0,11)) as Integer) <= $cpa GROUP BY b.$columnId");
+  var result = await dbClient.rawQuery("SELECT (((SUM(b.$columnQuantity)/$cpa)*$tpa)- a.$columnStock) as advice,a.$columnUom as uom ,a.$columnStock as stock, a.itemname as item FROM $stable AS b INNER JOIN $itable as a ON (b._itemid=a._itemid) WHERE  CAST(julianday('now')-julianday(SUBSTR(b.$columnDate,0,11)) as Integer) <= $cpa GROUP BY b.$columnId");
  
     return result;
   

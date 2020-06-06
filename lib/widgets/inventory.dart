@@ -61,15 +61,8 @@ class _InventoryState extends State<Inventory> {
             appBar: AppBar(
               leading: IconButton(
                 icon: Icon(Icons.arrow_back, color: Colors.white),
-                onPressed: () async{
-                   var db = DatabaseHelper();
-  var data = await db.getAnalysis();
-  Navigator.pop(context);
-                  Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => myApp(data:data)),
-                              );},
+                onPressed: () {
+                   Navigator.of(context).pop();},
               ),
               title: Text("INVENTORY"),
               backgroundColor: Colors.lightBlue,

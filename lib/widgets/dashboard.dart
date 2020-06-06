@@ -34,7 +34,7 @@ setState(() {
   monthlyPurchases= monthlyPurchases;
   if(x.length != 0){
   topsellingItem = x.first["hitem"];}
- if(y.length!=0){ highlyprofitableItem = y.first["pitem"];}
+ if(y.length!=0){ highlyprofitableItem = y.first["hitem"];}
 });
 
 
