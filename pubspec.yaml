@@ -26,12 +26,13 @@ dependencies:
   cupertino_icons: ^0.1.2
   sqflite: any
   path_provider: any
+  shared_preferences: ^0.5.7
   flutter_barcode_scanner: ^0.1.7
-  charts_flutter: ^0.8.1
-  flutter_sparkline: any
-  flutter_staggered_grid_view: any
-  flutter_circular_chart: any
+  charts_flutter: ^0.9.0
+  flutter_spinkit: "^4.1.2"
+  http: ^0.12.0
   autocomplete_textfield: any
+  pdf: ^1.8.1
 
 dev_dependencies:
   flutter_test:

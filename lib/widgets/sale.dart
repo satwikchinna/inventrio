@@ -49,6 +49,7 @@ class _SaleState extends State<Sales> {
         )),
         debugShowCheckedModeBanner: false,
         home: Scaffold(
+         
             appBar: AppBar(
               leading: IconButton(
                 icon: Icon(Icons.arrow_back, color: Colors.white),
@@ -58,7 +59,7 @@ class _SaleState extends State<Sales> {
               backgroundColor: Colors.lightBlue,
             ),
             floatingActionButton: FloatingActionButton(
-              foregroundColor: Colors.black54,
+              foregroundColor: Colors.white,
               backgroundColor: Colors.red,
               child: Icon(Icons.add),
               onPressed:() {

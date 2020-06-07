@@ -3,16 +3,18 @@ import 'dart:io';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
 import 'models/itemModel.dart';
 import 'models/saleModel.dart';
 import 'models/purchaseModel.dart';
+import 'models/todoModel.dart';
 
 class DatabaseHelper{
 
  static final itable = 'itemlist';
   static final stable = 'saleslist';
   static final ptable = 'purchaseslist';
+  static final rtable = 'todolist';
   
   static final columnId = '_itemid';
   static final columnName = 'itemname';
@@ -25,6 +27,9 @@ class DatabaseHelper{
   static final columnPid = 'purchaseid';
   static final columnQuantity = 'quantity';
   static final columnDate = 'doc';
+  static final columnTime = 'time';
+  static final columnRemainder = 'remainder';
+  static final columnRid = 'remainderid';
 static final DatabaseHelper _instance = new DatabaseHelper.internal();
 factory DatabaseHelper() => _instance;
 static Database _db;
@@ -81,6 +86,13 @@ return ourDb;
           
           )
           ''');
+          await db.execute('''
+          CREATE TABLE $rtable(
+            $columnRid INTEGER PRIMARY KEY,
+            $columnTime TEXT NOT NULL,
+            $columnRemainder TEXT NOT NULL 
+          )
+          ''');
 
 
   }
@@ -91,6 +103,14 @@ return ourDb;
 
 
   }
+
+  getSettings() async{
+     SharedPreferences prefs = await SharedPreferences.getInstance();
+     return prefs;
+
+  }
+
+
 
    void saveSale(String name,String doc,double quantity,double price) async{
        var dbClient = await db;
@@ -109,6 +129,21 @@ return ourDb;
 
 
   }
+  Future<int> saveTodo(Todo todo) async{
+       var dbClient = await db;
+       int res = await dbClient.insert("$rtable",todo.toMap());
+       return res;
+
+
+  }
+  Future<int> deleteTodo(int id) async{
+       var dbClient = await db;
+       await dbClient.rawQuery("DELETE FROM $rtable WHERE $columnRid = $id");
+       return 1;
+
+
+  }
+  
   Future<List> getAnalysis() async{
 
      var dbClient = await db;
@@ -116,37 +151,50 @@ return ourDb;
   
     return result;
   }
-
-    Future<Map> gethiglySelling() async{
+Future<List<Map>>  gethiglySelling() async{
 
      var dbClient = await db;
-  var result = await dbClient.rawQuery("SELECT $columnName as hitem FROM $stable WHERE $columnQuantity = MAX($columnQuantity) ");
+     var result = await dbClient.rawQuery("SELECT $columnName as hitem from $itable WHERE $columnId = (SELECT $columnId from $stable GROUP BY $columnId ORDER BY SUM($columnQuantity) DESC LIMIT 1 )");
    
     
-    return result.first;
+    return result;
   }
 
- Future<List<double>> gettotalmIncomes() async{
+  Future<List<Map>>  gethiglyProfitable() async{
 
      var dbClient = await db;
-  var result = await dbClient.rawQuery("SELECT SUM($columnSp*$columnQuantity) as income FROM $stable GROUP BY SUBSTR($columnDate,0,8) ");
-  List<double> list = new List();
-    for(var x in result){
-      x.forEach((k,v)=>list.add(v));
-    }
-    return list;
+     var result = await dbClient.rawQuery("SELECT $columnName as hitem FROM $itable WHERE $columnId = (SELECT $columnId from $stable GROUP BY $columnId ORDER BY SUM($columnQuantity)*AVG($columnSp) DESC LIMIT 1) ");
+   
+    
+    return result;
+  }
+
+ Future<List<Map>> gettotalmIncomes() async{
+
+     var dbClient = await db;
+  var result = await dbClient.rawQuery("SELECT SUBSTR($columnDate,0,8) as day, SUM($columnSp*$columnQuantity) as income FROM $stable GROUP BY SUBSTR($columnDate,0,8) ");
+ 
+    return result;
    
   }
 
-  Future<List<double>> gettotalmPurchases() async{
+  Future<List<Map>> getAdvice() async{
+    SharedPreferences prefs = await getSettings();
+    var tpa = prefs.getString('TPA');
+    var cpa = prefs.getString('CPA');
+     var dbClient = await db;
+  var result = await dbClient.rawQuery("SELECT (((SUM(b.$columnQuantity)/$cpa)*$tpa)- a.$columnStock) as advice,a.$columnUom as uom ,a.$columnStock as stock, a.itemname as item FROM $stable AS b INNER JOIN $itable as a ON (b._itemid=a._itemid) WHERE  CAST(julianday('now')-julianday(SUBSTR(b.$columnDate,0,11)) as Integer) <= $cpa GROUP BY b.$columnId");
+ 
+    return result;
+  
+  }
+
+  Future<List<Map>> gettotalmPurchases() async{
 
      var dbClient = await db;
-  var result = await dbClient.rawQuery("SELECT SUM($columnCp*$columnQuantity) as investment FROM $ptable GROUP BY SUBSTR($columnDate,0,8) ");
-  List<double> list = new List();
-    for(var x in result){
-      x.forEach((k,v)=>list.add(v));
-    }
-    return list;
+  var result = await dbClient.rawQuery("SELECT SUBSTR($columnDate,0,8) as day, SUM($columnCp*$columnQuantity) as income FROM $ptable GROUP BY SUBSTR($columnDate,0,8) ");
+ 
+    return result;
    
   }
   
@@ -188,6 +236,13 @@ Future<List> getAllPurchases() async {
 
   var dbClient = await db;
   var result = await dbClient.rawQuery("SELECT b.*, a.itemname FROM $ptable AS b INNER JOIN $itable as a ON (b._itemid=a._itemid) ORDER BY $columnPid DESC");
+  return result.toList();
+}
+
+Future<List> getAllTodos() async {
+
+  var dbClient = await db;
+  var result = await dbClient.rawQuery("SELECT * FROM $rtable ORDER BY $columnTime DESC");
   return result.toList();
 }
 

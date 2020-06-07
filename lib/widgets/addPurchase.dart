@@ -13,7 +13,7 @@ var recentCities;
 
 getcities() async{
   cities = await db.getAllItemnames();
- recentCities = ['sugar'];
+ recentCities = [];
   }
  
 
@@ -133,6 +133,7 @@ bool saved = false;
         )),
         debugShowCheckedModeBanner: false,
         home: Scaffold(
+         
             appBar: AppBar(
               leading: IconButton(
                 icon: Icon(Icons.arrow_back, color: Colors.white),
