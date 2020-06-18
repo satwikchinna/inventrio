@@ -123,8 +123,8 @@ return ourDb;
  
    void savePurchase(String name,String doc,double quantity,double price) async{
        var dbClient = await db;
-       dbClient.rawQuery("INSERT INTO $ptable(quantity,costprice,doc,_itemid) VALUES($quantity,$price,'$doc',(SELECT _itemid FROM $itable WHERE $columnName = '$name')) ");
-       dbClient.rawQuery("UPDATE $itable SET $columnStock = $columnStock + $quantity , $columnCp = $price WHERE $columnName = '$name' ");
+       await dbClient.rawQuery("INSERT INTO $ptable(quantity,costprice,doc,_itemid) VALUES($quantity,$price,'$doc',(SELECT _itemid FROM $itable WHERE $columnName = '$name')) ");
+       await dbClient.rawQuery("UPDATE $itable SET $columnStock = $columnStock + $quantity , $columnCp = $price WHERE $columnName = '$name' ");
        
 
 
@@ -144,17 +144,19 @@ return ourDb;
 
   }
 
-  Future<int> deleteSale(int id) async{
+  Future<int> deleteSale(int id,double quantity,String itemname ) async{
        var dbClient = await db;
        await dbClient.rawQuery("DELETE FROM $stable WHERE $columnSid = $id");
+       await  dbClient.rawQuery("UPDATE $itable SET $columnStock = $columnStock + $quantity  WHERE $columnName= '$itemname' ");
        return 1;
 
 
   }
   
-  Future<int> deletePurchase(int id) async{
+  Future<int> deletePurchase(int id,double quantity,String itemname ) async{
        var dbClient = await db;
        await dbClient.rawQuery("DELETE FROM $ptable WHERE $columnPid = $id");
+        await  dbClient.rawQuery("UPDATE $itable SET $columnStock = $columnStock - $quantity  WHERE $columnName= '$itemname' ");
        return 1;
 
 

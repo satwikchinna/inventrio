@@ -33,8 +33,8 @@ class _PurchaseState extends State<Purchases> {
     });
   }
 
-   Future<void> deletePurchase(int id) async {
-    await db.deletePurchase(id);
+   Future<void> deletePurchase(int id,quantity,name) async {
+    await db.deletePurchase(id,quantity,name);
     _getRecords();
   }
 
@@ -119,7 +119,7 @@ class _PurchaseState extends State<Purchases> {
                                       color: Colors.black,
                                     ),
                                     onPressed: () {
-                                      deletePurchase(Purchase.fromMap(purchases[position]).purchaseid);
+                                      deletePurchase(Purchase.fromMap(purchases[position]).purchaseid,Purchase.fromMap(purchases[position]).quantity,duplicatePurchases[position]["itemname"]);
                                     },
                                   ),
                                 ),

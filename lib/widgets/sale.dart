@@ -36,8 +36,8 @@ class _SaleState extends State<Sales> {
     });
   }
 
-  Future<void> deleteSale(int id) async {
-    await db.deleteSale(id);
+  Future<void> deleteSale(int id,quantity,itemname) async {
+    await db.deleteSale(id,quantity,itemname);
     _getRecords();
   }
 
@@ -122,7 +122,7 @@ class _SaleState extends State<Sales> {
                                       color: Colors.black,
                                     ),
                                     onPressed: () async{
-                                      db.deleteSale(Sale.fromMap(duplicateSales[position]).saleid);
+                                      deleteSale(Sale.fromMap(duplicateSales[position]).saleid,Sale.fromMap(duplicateSales[position]).quantity,duplicateSales[position]["itemname"]);
                                     },
                                   ),
                                 ),

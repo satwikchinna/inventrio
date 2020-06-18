@@ -38,7 +38,6 @@ class Sale {
 
   Sale.fromMap(Map<String,dynamic> map)
   {
-this._itemid = map["_itemid"];
     this.quantity = map["quantity"];
     this.doc = map["doc"];
     this.sellingprice = map["sellingprice"];
