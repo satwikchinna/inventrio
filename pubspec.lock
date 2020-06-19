@@ -8,10 +8,16 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
 <<<<<<< HEAD
+<<<<<<< HEAD
     version: "2.0.13"
 =======
     version: "2.0.11"
 >>>>>>> upgraded flutter and resolved errors
+=======
+
+    version: "2.0.13"
+
+>>>>>>> 0ab656babacb593a9a8b16368c11b2c74e1a46cf
   args:
     dependency: transitive
     description:
